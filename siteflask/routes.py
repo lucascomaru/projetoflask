@@ -66,3 +66,9 @@ def perfil():
 @login_required
 def criar_post():
     return render_template('criarpost.html')
+
+@app.route('/perfil/editar')
+@login_required
+def editar_perfil():
+    foto_perfil = url_for('static', filename=f'fotos_perfil/{current_user.foto_perfil}')
+    render_template('editarperfil.html', foto_perfil=foto_perfil)
