@@ -1,18 +1,16 @@
 from flask import render_template, redirect, url_for, flash, request
 from siteflask import app, database, bcrypt
-from siteflask.forms import FormLogin, FormCriarConta, FormEditarPerfil
-from siteflask.models import Usuario
+from siteflask.forms import FormLogin, FormCriarConta, FormEditarPerfil, FormCriarPost
+from siteflask.models import Usuario, Post
 from flask_login import login_user, logout_user, current_user, login_required
 import secrets
 import os
 from PIL import Image
 
-lista_usuarios = ['Lucas', 'Gabriel', 'Fátima', 'Vinicius', 'Cláudia'] #variavel de teste
-
-
 @app.route('/')
 def home():
-    return render_template('home.html')
+    posts = Post.query.order_by(Post.id.desc())
+    return render_template('home.html', posts=posts)
 
 
 @app.route('/contato')
@@ -23,6 +21,7 @@ def contato():
 @app.route('/usuarios')
 @login_required
 def usuarios():
+    lista_usuarios = Usuario.query.all()
     return render_template('usuarios.html', lista_usuarios=lista_usuarios)
 
 
@@ -67,10 +66,17 @@ def perfil():
     return render_template('perfil.html', foto_perfil=foto_perfil)
 
 
-@app.route('/post/criar')
+@app.route('/post/criar', methods=['GET', 'POST'])
 @login_required
 def criar_post():
-    return render_template('criarpost.html')
+    form = FormCriarPost()
+    if form.validate_on_submit():
+        post = Post(titulo=form.titulo.data, corpo=form.corpo.data, autor=current_user)
+        database.session.add(post)
+        database.session.commit()
+        flash('Post criado com sucesso!', 'alert-success')
+        return redirect(url_for('home'))
+    return render_template('criarpost.html', form=form)
 
 
 def salvar_imagem(imagem):
@@ -84,6 +90,15 @@ def salvar_imagem(imagem):
     imagem_reduzida.save(caminho_completo)
     return nome_arquivo
 
+def atualizar_cursos(form):
+    lista_cursos = []
+    for campo in form:
+        if 'curso_' in campo.name:
+            if campo.data:
+              lista_cursos.append(campo.label.text)
+    return ';'.join(lista_cursos)
+
+
 @app.route('/perfil/editar', methods=['GET', 'POST'])
 @login_required
 def editar_perfil():
@@ -94,6 +109,7 @@ def editar_perfil():
         if form.foto_perfil.data:
             nome_imagem = salvar_imagem(form.foto_perfil.data)
             current_user.foto_perfil = nome_imagem
+        current_user.cursos = atualizar_cursos(form)
         database.session.commit()
         flash('Perfil atualizado com Sucesso', 'alert-success')
         return redirect(url_for('perfil'))
