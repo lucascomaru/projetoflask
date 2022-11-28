@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2aeb6e6f-ae84-42fc-af90-64ca97499792" name="Changes" comment="Atualizando routes e html do post">
-      <change beforePath="$PROJECT_DIR$/testes.py" beforeDir="false" />
-    </list>
+    <list default="true" id="2aeb6e6f-ae84-42fc-af90-64ca97499792" name="Changes" comment="Atualizando routes e html do post" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
